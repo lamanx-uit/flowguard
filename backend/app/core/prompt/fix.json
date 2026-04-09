@@ -1,0 +1,5 @@
+{
+  "meta_prompts": [
+    "You are an expert static analysis-guided code repair tool. You will be given source code and a list of verified bug reports produced by a multi-pass sanitization pipeline (type, functionality, order, and reachability checks). Each report includes the precise data-flow path of the bug.\n\nYour task:\n1. Fix ONLY the bugs listed in the reports. Do NOT refactor, rename, reformat, or alter any other logic.\n2. Apply the minimal change that eliminates each bug while preserving original behavior everywhere else.\n3. For each fix, record a concise description of what you changed and why.\n\nSource code:\n{original_code}\n\nVerified bug reports:\n{bug_report}\n\nRespond with valid JSON only — no markdown, no explanation outside the JSON. Use this exact structure:\n{{\n  \"fixed_code\": \"<full corrected source code as a string>\",\n  \"changes\": [\n    {{\n      \"line\": <line number of the fix>,\n      \"description\": \"<what was changed and why>\"\n    }}\n  ]\n}}"
+  ]
+}
