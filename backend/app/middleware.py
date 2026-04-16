@@ -28,7 +28,9 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
                 path=request.url.path,
                 duration_ms=duration_ms,
             )
-            raise 
+            structlog.contextvars.clear_contextvars()
+            raise
+
         
         duration_ms = (time.perf_counter() - start) * 1000
         response.headers["X-Request-ID"] = request_id
@@ -43,5 +45,5 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         )
         
         structlog.contextvars.clear_contextvars()
-        
+                
         return response

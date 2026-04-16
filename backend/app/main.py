@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 
 import sentry_sdk
+import structlog
 
 from app.middleware import RequestLoggingMiddleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,6 +19,8 @@ from config import settings
 
 setup_logging()
 
+logger = structlog.get_logger("flowguard.app")
+
 sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
     send_default_pii=True,
@@ -29,6 +32,10 @@ app = FastAPI(
     description="LLMSAN-powered bug detection web app",
     version="0.1.0"
 )
+
+@app.on_event("startup")
+async def startup():                                                                                  
+      logger.info("Flowguard started", version="0.1.0")
 
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(CORSMiddleware, 

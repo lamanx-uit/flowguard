@@ -15,7 +15,7 @@ async def requestValidationError(request: Request, exc: RequestValidationError):
     )
 
 async def openAIError(request: Request, exc: OpenAIError):
-    logger.error("OpenAI API error", detaul=str(exc))
+    logger.exception("OpenAI API error", detail=str(exc))
 
     return JSONResponse(
         status_code=502,
@@ -23,7 +23,7 @@ async def openAIError(request: Request, exc: OpenAIError):
     )
     
 async def genericExceptionHandler(request: Request, exc: Exception):
-    logger.error("Unhandled error", detail=str(exc))
+    logger.exception("Unhandled error", detail=str(exc))
     
     return JSONResponse(
         status_code=500,

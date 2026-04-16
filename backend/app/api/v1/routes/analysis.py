@@ -3,11 +3,15 @@ from app.schemas.analysis import AnalyzeReqest, AnalyzeResponse, BugReport, Data
 from app.config import settings
 from app.core.pipeline import stream_llmsan
 import asyncio
+import structlog
+
+logger = structlog.get_logger("flowguard.analysis")
 
 router = APIRouter(tags=["Analyze"])
 
 @router.post("/analyze", response_model=AnalyzeResponse)
 async def analysis(request: AnalyzeReqest):
+    logger.info("analysis started", bug_types=request.bug_types, model=request.model)
     result = await asyncio.to_thread(stream_llmsan,
         source_code=request.code,
         file_name=request.language + "_file",
@@ -25,4 +29,5 @@ async def analysis(request: AnalyzeReqest):
         is_measure_token_cost=False
     )
     
+    logger.info("analysis complete", bug_count=result["bug_count"], true_bug_count=result["true_bug_count"])
     return AnalyzeResponse(**result)
