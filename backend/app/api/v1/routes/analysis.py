@@ -2,12 +2,13 @@ from fastapi import APIRouter
 from app.schemas.analysis import AnalyzeReqest, AnalyzeResponse, BugReport, DataFlowPoint, SanitizerResults, FunctionalityDetail, ReachabilityDetail
 from app.config import settings
 from app.core.pipeline import stream_llmsan
+import asyncio
 
 router = APIRouter(tags=["Analyze"])
 
-@router.post("/analyse", response_model=AnalyzeResponse)
+@router.post("/analyze", response_model=AnalyzeResponse)
 async def analysis(request: AnalyzeReqest):
-    result = stream_llmsan(
+    result = await asyncio.to_thread(stream_llmsan,
         source_code=request.code,
         file_name=request.language + "_file",
         code_in_support_files={},
