@@ -6,7 +6,7 @@ import structlog
 
 logger = structlog.get_logger("flowguard.requests")
 
-async def requestValidationError(request: Request, exc: RequestValidationError):   
+async def handle_validation_error(request: Request, exc: RequestValidationError):   
     logger.error("Request validation error", detail=str(exc))
      
     return JSONResponse(
@@ -14,7 +14,7 @@ async def requestValidationError(request: Request, exc: RequestValidationError):
         content={"detail": "Invalid request data"},
     )
 
-async def openAIError(request: Request, exc: OpenAIError):
+async def handle_openai_error(request: Request, exc: OpenAIError):
     logger.exception("OpenAI API error", detail=str(exc))
 
     return JSONResponse(
@@ -22,7 +22,7 @@ async def openAIError(request: Request, exc: OpenAIError):
         content={"detail": "Error communicating upstream LLM service"},
     )
     
-async def genericExceptionHandler(request: Request, exc: Exception):
+async def handle_unexpected_error(request: Request, exc: Exception):
     logger.exception("Unhandled error", detail=str(exc))
     
     return JSONResponse(
