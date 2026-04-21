@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.schemas.analysis import AnalyzeReqest, AnalyzeResponse, BugReport, DataFlowPoint, SanitizerResults, FunctionalityDetail, ReachabilityDetail
+from app.schemas.analysis import AnalyzeReqest, AnalyzeResponse
 from app.config import settings
 from app.core.pipeline import stream_llmsan
 import asyncio
@@ -29,5 +29,6 @@ async def analysis(request: AnalyzeReqest):
         is_measure_token_cost=False
     )
     
-    logger.info("analysis complete", bug_count=result["bug_count"], true_bug_count=result["true_bug_count"])
+    logger.info("analysis complete", 
+                bug_count=result["bug_count"], true_bug_count=result["true_bug_count"])
     return AnalyzeResponse(**result)

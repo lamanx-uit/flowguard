@@ -1,0 +1,5 @@
+exclude = ["app/core/"]
+select = ["E", "F"]
+
+[per-file-ignores]                                                                                    
+"app/tests/*.py" = ["E501"]   

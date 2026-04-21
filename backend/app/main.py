@@ -6,7 +6,10 @@ import structlog
 from app.middleware import Request_Logging_Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.exception_handlers import handle_validation_error, handle_openai_error, handle_unexpected_error
+from app.exception_handlers import (
+    handle_validation_error,
+    handle_openai_error,
+    handle_unexpected_error,)
 from fastapi.exceptions import RequestValidationError
 from openai import OpenAIError
 
@@ -34,7 +37,7 @@ app = FastAPI(
 )
 
 @app.on_event("startup")
-async def startup():                                                                                  
+async def startup():
       logger.info("Flowguard started", version="0.1.0")
 
 app.add_middleware(Request_Logging_Middleware)

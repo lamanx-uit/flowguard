@@ -8,7 +8,8 @@ client = TestClient(app)
 def test_health_check():
     response = client.get("/api/v1/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "healthy", "service": "Flowguard", "version": "0.1.0", "python_support": True}
+    assert response.json() == {"status": "healthy", "service": "Flowguard", 
+                               "version": "0.1.0", "python_support": True}
     
 def test_analyse_endpoint_with_mock(mocker):
     
@@ -112,7 +113,8 @@ def test_fix_endpoint_with_invalid_input():
     assert response.json() == {"detail": "Invalid request data"}
     
 def test_analyse_endpoint_with_openai_error(mocker):
-    mocker.patch("app.api.v1.routes.analysis.stream_llmsan", side_effect=OpenAIError("OpenAI API error"))
+    mocker.patch("app.api.v1.routes.analysis.stream_llmsan", 
+                 side_effect=OpenAIError("OpenAI API error"))
     
     response = client.post("/api/v1/analyze", 
     json={

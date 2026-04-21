@@ -1,0 +1,53 @@
+name: test-backend-ci
+
+on: 
+    push:
+        branches: [main]
+        paths:
+            - 'backend/**'
+    pull_request: 
+        branches: [main]
+        paths: 
+            - 'backend/**'
+
+jobs:
+    test:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        
+        - name: Setup Python
+          uses: actions/setup-python@v5
+          with:
+            python-version: "3.12"
+            cache: 'pip'
+
+        - name: Install dependencies
+          run: pip install -r backend/app/requirements.txt
+
+        - name: Code quality Check
+          run: ruff check backend/
+        
+        - name: Code functionality check
+          run: pytest backend/app/tests/
+
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v4
+      
+        - name: Build and export docker image
+          run: |
+            docker build -t flowguard:ci ./backend 
+            docker save flowguard:ci -o /tmp/flowguard.tar
+
+        - name: Run Trivy vulnerability scan
+          uses: aquasecurity/trivy-action@master
+          with: 
+            scan-type: image
+            image-ref: flowguard:ci
+            severity: "CRITICAL"
+            exit-code: '1'
+
+          
+            

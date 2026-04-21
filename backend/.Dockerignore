@@ -1,0 +1,7 @@
+.env                                                                                                  
+__pycache__                                                                                           
+*.pyc                                                                                                 
+*.pyo                                                                                                 
+app/core/lib/vendor/                                                                                  
+app/core/lib/build/
+.git      
