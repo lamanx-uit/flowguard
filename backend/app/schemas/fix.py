@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import List
 from app.schemas.analysis import BugReport
 
-class SanitizeRequest(BaseModel):
+class FixRequest(BaseModel):
     code: str 
     bug: List[BugReport]
     language: str
@@ -12,7 +12,7 @@ class ChangeDetail(BaseModel):
     line: int
     description: str
 
-class SanitizeResponse(BaseModel):
+class FixResponse(BaseModel):
     original_code: str
     fixed_code: str
     changes: List[ChangeDetail]

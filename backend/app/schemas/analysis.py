@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-class AnalyzeReqest(BaseModel):
+class AnalyzeRequest(BaseModel):
     code: str = Field(..., description="The source code snippet to analyze")
     model: str = Field(..., description="Model used")
     language: str = Field(..., description="Programming language of the code snippet")

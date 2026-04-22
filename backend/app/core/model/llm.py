@@ -150,46 +150,22 @@ class LLM:
         :param message: The input message for the model
         :return: The output from the model
         """
-        def timeout_handler(signum, frame):
-            raise TimeoutError("ChatCompletion timeout")
-
-        def simulate_ctrl_c(signal, frame):
-            raise KeyboardInterrupt("Simulating Ctrl+C")
 
         model_input = [
             {"role": "system", "content": self.systemRole},
             {"role": "user", "content": message},
         ]
-
-        received = False
-        tryCnt = 0
-        output = ""
-
-        signal.signal(signal.SIGALRM, timeout_handler)
-        while not received:
-            tryCnt += 1
+        
+        for _ in range(5):
             time.sleep(2)
             try:
-                signal.alarm(100)  # Set a timeout of 100 seconds
-
-                # OpenAI version: 24.0
-                # Use OpenAI official APIs
-                client = OpenAI(api_key=self.openai_key)
+                client = OpenAI(api_key=self.openai_key, timeout=100.0)
                 response = client.chat.completions.create(
-                    model=self.online_model_name, messages=model_input, temperature=self.temperature
+                    model=self.online_model_name,
+                    messages=model_input,
+                    temperature=self.temperature,
                 )
-
-                signal.alarm(0)  # Cancel the timeout
-                output = response.choices[0].message.content
-                break
-            except TimeoutError:
-                received = False
-                simulate_ctrl_c(None, None)  # Simulate Ctrl+C effect
-            except KeyboardInterrupt:
-                output = ""
-                break
+                return response.choices[0].message.content or ""
             except Exception:
-                received = False
-            if tryCnt > 5:
-                output = ""
-        return output
+                continue
+        return ""

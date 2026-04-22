@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.schemas.fix import SanitizeRequest, SanitizeResponse
+from app.schemas.fix import FixRequest, FixResponse
 from app.core.pipeline import fix_code_pipeline
 from app.config import settings
 import asyncio
@@ -9,8 +9,8 @@ logger = structlog.get_logger("flowguard.fix")
 
 router = APIRouter(tags=["Fix"])
 
-@router.post("/fix", response_model=SanitizeResponse)
-async def fix(request: SanitizeRequest):
+@router.post("/fix", response_model=FixResponse)
+async def fix(request: FixRequest):
     logger.info("fix started", model=request.model, bug_count=len(request.bug))
     result = await asyncio.to_thread(fix_code_pipeline,
         source_code=request.code,
@@ -20,4 +20,4 @@ async def fix(request: SanitizeRequest):
     )
     
     logger.info("fix complete", changes_count=len(result.get("changes", [])))
-    return SanitizeResponse(**result)
+    return FixResponse(**result)
