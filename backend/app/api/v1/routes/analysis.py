@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.schemas.analysis import AnalyzeReqest, AnalyzeResponse
+from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse
 from app.config import settings
 from app.core.pipeline import stream_llmsan
 import asyncio
@@ -10,7 +10,7 @@ logger = structlog.get_logger("flowguard.analysis")
 router = APIRouter(tags=["Analyze"])
 
 @router.post("/analyze", response_model=AnalyzeResponse)
-async def analysis(request: AnalyzeReqest):
+async def analysis(request: AnalyzeRequest):
     logger.info("analysis started", bug_types=request.bug_types, model=request.model)
     result = await asyncio.to_thread(stream_llmsan,
         source_code=request.code,
