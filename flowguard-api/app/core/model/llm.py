@@ -157,7 +157,6 @@ class LLM:
         ]
         
         for _ in range(5):
-            time.sleep(2)
             try:
                 client = OpenAI(api_key=self.openai_key, timeout=100.0)
                 response = client.chat.completions.create(

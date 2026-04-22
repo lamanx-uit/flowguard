@@ -9,7 +9,13 @@ logger = structlog.get_logger("flowguard.requests")
 
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        request_id =  request.headers.get("X-Request-ID") or str(uuid.uuid4())
+        client_request_id = request.headers.get("X-Request-ID")
+        
+        try:
+            request_id = str(uuid.UUID(client_request_id)) if client_request_id else str(uuid.uuid4())
+        except ValueError:                                                
+            request_id = str(uuid.uuid4())
+            
         request.state.request_id = request_id
         
         structlog.contextvars.bind_contextvars(request_id=request_id)

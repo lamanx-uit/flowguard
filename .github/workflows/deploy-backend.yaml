@@ -4,11 +4,11 @@ on:
     push:
         branches: [main]
         paths:
-            - 'backend/**'
-    pull_request: 
+            - 'flowguard-api/**'
+    pull_request:
         branches: [main]
-        paths: 
-            - 'backend/**'
+        paths:
+            - 'flowguard-api/**'
 
 jobs:
     test:
@@ -25,20 +25,20 @@ jobs:
             cache: 'pip'
 
         - name: Install dependencies
-          run: pip install -r backend/app/requirements-dev.txt
+          run: pip install -r flowguard-api/app/requirements-dev.txt
 
         - name: Code quality Check
-          run: ruff check backend/
+          run: ruff check flowguard-api/
         
         - name: Code functionality check
-          run: pytest backend/app/tests/
+          run: pytest flowguard-api/app/tests/
 
         - name: Set up Docker Buildx
           uses: docker/setup-buildx-action@v4
       
         - name: Build and export docker image
           run: |
-            docker build -t flowguard:ci ./backend 
+            docker build -t flowguard:ci ./flowguard-api
             docker save flowguard:ci -o /tmp/flowguard.tar
 
         - name: Run Trivy vulnerability scan

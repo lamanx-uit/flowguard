@@ -1,6 +1,13 @@
 import structlog
+from config import settings
 
 def setup_logging():
+    renderer = (
+        structlog.dev.ConsoleRenderer()
+        if settings.LOG_FORMAT == "console"
+        else structlog.processors.JSONRenderer()
+    )
+    
     structlog.configure(
         processors=[
             structlog.contextvars.merge_contextvars,
@@ -8,5 +15,3 @@ def setup_logging():
             structlog.stdlib.add_log_level,
             structlog.processors.JSONRenderer(),
         ])
-    
-    return structlog.get_logger("flowguard")

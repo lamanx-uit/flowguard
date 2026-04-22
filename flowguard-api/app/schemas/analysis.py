@@ -5,7 +5,7 @@ class AnalyzeRequest(BaseModel):
     code: str = Field(..., description="The source code snippet to analyze")
     model: str = Field(..., description="Model used")
     language: str = Field(..., description="Programming language of the code snippet")
-    bug_types: str = Field(..., description="Bug type: dbz, npd, ci, xss, or apt")
+    bug_type: str = Field(..., description="Bug type: dbz, npd, ci, xss, or apt")
 
 class DataFlowPoint(BaseModel):
     line: int
