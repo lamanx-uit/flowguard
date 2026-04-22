@@ -12,6 +12,7 @@ from app.exception_handlers import (
     handle_unexpected_error,)
 from fastapi.exceptions import RequestValidationError
 from openai import OpenAIError
+from contextlib import asynccontextmanager
 
 from app.api.v1.routes.health import router as health
 from app.api.v1.routes.analysis import router as analysis
@@ -29,15 +30,17 @@ setup_logging()
 
 logger = structlog.get_logger("flowguard.app")
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Flowguard started", version="0.1.0")
+    yield
+
 app = FastAPI(
     title="Flowguard",
     description="LLMSAN-powered bug detection web app",
-    version="0.1.0"
+    version="0.1.0",
+    lifespan=lifespan
 )
-
-@app.on_event("startup")
-async def startup():
-      logger.info("Flowguard started", version="0.1.0")
 
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(CORSMiddleware, 
