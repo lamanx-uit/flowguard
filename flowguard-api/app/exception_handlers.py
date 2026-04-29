@@ -3,6 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from openai import OpenAIError
 from fastapi.responses import JSONResponse
 import structlog
+import traceback
 
 logger = structlog.get_logger("flowguard.requests")
 
@@ -23,7 +24,12 @@ async def handle_openai_error(request: Request, exc: OpenAIError):
     )
     
 async def handle_unexpected_error(request: Request, exc: Exception):
-    logger.exception("Unhandled error", detail=str(exc))
+    logger.error(
+        "Unhandled error",
+        exc_type=type(exc).__name__,
+        detail=str(exc),
+        traceback=traceback.format_exc(),
+    )
     
     return JSONResponse(
         status_code=500,

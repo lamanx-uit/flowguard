@@ -1,5 +1,8 @@
 exclude = ["app/core/"]
-select = ["E", "F"]
 
-[per-file-ignores]                                                                                    
-"app/tests/*.py" = ["E501"]   
+[lint]
+select = ["E", "F"]
+ignore = ["E501"]
+
+[lint.per-file-ignores]
+"app/tests/*.py" = ["E501"]

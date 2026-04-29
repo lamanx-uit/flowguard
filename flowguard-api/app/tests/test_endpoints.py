@@ -43,7 +43,7 @@ def test_analyse_endpoint_with_mock(mocker):
         "code": "int x = 10 / 0;",
         "language": "java",
         "model": "gpt-4o-mini",
-        "bug_types": "dbz"
+        "bug_type": "dbz"
     })
     
     assert response.status_code == 200
@@ -121,7 +121,7 @@ def test_analyse_endpoint_with_openai_error(mocker):
         "code": "int x = 10 / 0;",
         "language": "java",
         "model": "gpt-4o-mini",
-        "bug_types": "dbz"
+        "bug_type": "dbz"
     })
 
     assert response.status_code == 502
@@ -179,12 +179,13 @@ def test_generic_exception_returns_500(mocker):
     mocker.patch("app.api.v1.routes.analysis.stream_llmsan",
                  side_effect=RuntimeError("unexpected boom"))
 
-    response = client.post("/api/v1/analyze",
+    tolerant_client = TestClient(app, raise_server_exceptions=False)
+    response = tolerant_client.post("/api/v1/analyze",
     json={
         "code": "int x = 10 / 0;",
         "language": "java",
         "model": "gpt-4o-mini",
-        "bug_types": "dbz"
+        "bug_type": "dbz"
     })
 
     assert response.status_code == 500

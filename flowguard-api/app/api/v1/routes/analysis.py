@@ -11,7 +11,7 @@ router = APIRouter(tags=["Analyze"])
 
 @router.post("/analyze", response_model=AnalyzeResponse)
 async def analysis(request: AnalyzeRequest):
-    logger.info("analysis started", bug_types=request.bug_types, model=request.model)
+    logger.info("analysis started", bug_type=request.bug_type, model=request.model)
     result = await asyncio.to_thread(stream_llmsan,
         source_code=request.code,
         file_name=request.language + "_file",
@@ -20,7 +20,7 @@ async def analysis(request: AnalyzeRequest):
         detection_key=settings.OPENAI_API_KEY,
         sanitization_online_model_name=request.model,
         sanitization_key=settings.OPENAI_API_KEY,
-        bug_type=request.bug_types,
+        bug_type=request.bug_type,
         analysis_mode="eager",
         neural_sanitize_strategy={
             "functionality_sanitize": settings.NEURAL_SANITIZE_STRATEGY_FUNCTIONALITY,

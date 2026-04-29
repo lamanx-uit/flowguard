@@ -5,7 +5,7 @@ import structlog
 
 from app.middleware import RequestLoggingMiddleware
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.exceptions import HTTPException as StarletteHTTPException                                       
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
 
 from app.exception_handlers import (
@@ -65,8 +65,8 @@ async def openai_exception_handler(request: Request, exc: OpenAIError):
     return await handle_openai_error(request, exc)
 
 @app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request, exc):                                                                
-      return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+async def http_exception_handler(request, exc):
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 @app.exception_handler(Exception)
 async def generic_exception_handler(request: Request, exc: Exception):

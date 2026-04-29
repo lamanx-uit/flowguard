@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     NEURAL_SANITIZE_STRATEGY_REACHABILITY: bool = True
     SENTRY_DSN: str | None = None
     SENTRY_TRACES_SAMPLE_RATE: float | None = 0.1
-    LOG_FORMAT: str
+    LOG_FORMAT: str | None = "json"  
     
     class Config:
         env_file = ".env"
