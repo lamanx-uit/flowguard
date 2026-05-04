@@ -30,7 +30,7 @@ export default function Home() {
                 Features
               </Link>
               <Link
-                href="https://github.com/dunnokiet/llmsan-web"
+                href="https://github.com/lamanx-uit/flowguard"
                 target="_blank"
                 className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >

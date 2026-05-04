@@ -17,9 +17,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Textarea from "@/components/ui/textarea";
 import { Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { Editor } from "@monaco-editor/react";
 
 export function TabEditor({
   file,
@@ -181,12 +181,18 @@ export function TabEditor({
               onChange={handleFileChange}
             />
           </div>
-          <Textarea
-            value={code}
-            onChange={(e) => handleChangeCode(e.target.value)}
-            placeholder="Paste your code here..."
-            className="font-mono min-h-[300px]"
-          />
+            <Editor
+              height="300px"
+              language={language}  
+              value={code}
+              onChange={(value) => handleChangeCode(value ?? "")}
+              theme="vs-dark"
+              options={{
+                minimap: { enabled: false },
+                fontSize: 14,
+                scrollBeyondLastLine: false,
+              }}
+            />
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
