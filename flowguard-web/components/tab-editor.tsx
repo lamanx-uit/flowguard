@@ -20,6 +20,28 @@ import {
 import { Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Editor } from "@monaco-editor/react";
+import { FixResponse, StreamEvent } from "@/lib/types";
+
+interface TabEditorProps {
+  file: File | null;
+  code: string;
+  isAnalyzing: boolean;
+  language: string;
+  model: string;
+  type: string;
+  handleResetResults: () => void;
+  handleAppendResult: (result: StreamEvent) => void;
+  handleChangeCode: (code: string) => void;
+  handleChangeLanguage: (language: string) => void;
+  handleChangeModel: (model: string) => void;
+  handleChangeFile: (file: File | null) => void;
+  handleChangeActiveTab: (tab: string) => void;
+  handleChangeType: (type: string) => void;
+  handleChangeIsAnalyzing: (isAnalyzing: boolean) => void;
+  handleChangeFileName: (fileName: string) => void;
+  handleChangeFixResult: (fixResult: FixResponse | null) => void;
+  handleReset: () => void;
+}
 
 export function TabEditor({
   file,
@@ -28,7 +50,8 @@ export function TabEditor({
   language,
   model,
   type,
-  handleChangeResults,
+  handleResetResults,
+  handleAppendResult,
   handleChangeCode,
   handleChangeLanguage,
   handleChangeModel,
@@ -37,8 +60,9 @@ export function TabEditor({
   handleChangeType,
   handleChangeIsAnalyzing,
   handleChangeFileName,
-  handleChangeSanitizedCode,
-}: any) {
+  handleChangeFixResult,
+  handleReset,
+}: TabEditorProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,9 +78,9 @@ export function TabEditor({
       };
       reader.readAsText(selectedFile);
     }
-    
-    handleChangeResults([]);
-    handleChangeSanitizedCode("");
+
+    handleResetResults();
+    handleChangeFixResult(null);
   };
 
   const handleFileUploadClick = () => {
@@ -67,7 +91,7 @@ export function TabEditor({
     if (isAnalyzing || !code.trim()) return;
 
     handleChangeIsAnalyzing(true);
-    handleChangeResults([]);
+    handleResetResults();
     handleChangeActiveTab("results");
 
     try {
@@ -110,16 +134,13 @@ export function TabEditor({
 
         for (const line of lines) {
           if (line.trim()) {
-            const json = JSON.parse(line);
-            handleChangeResults((prev: any) => [
-              ...prev,
-              { ...json, timestamp: Date.now() },
-            ]);
+            const event: StreamEvent = { ...JSON.parse(line), timestamp: Date.now() };
+            handleAppendResult(event);
           }
         }
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "Analysis failed");
     } finally {
       handleChangeIsAnalyzing(false);
     }
@@ -177,37 +198,26 @@ export function TabEditor({
               type="file"
               ref={fileInputRef}
               className="hidden"
-              accept=".java,.py,.js,.ts,.cs,.txt"
+              accept=".java"
               onChange={handleFileChange}
             />
           </div>
-            <Editor
-              height="300px"
-              language={language}  
-              value={code}
-              onChange={(value) => handleChangeCode(value ?? "")}
-              theme="vs-dark"
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                scrollBeyondLastLine: false,
-              }}
-            />
+          <Editor
+            height="300px"
+            language={language}
+            value={code}
+            onChange={(value) => handleChangeCode(value ?? "")}
+            theme="light"
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+              scrollBeyondLastLine: false,
+            }}
+          />
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button
-          variant="outline"
-          onClick={() => {
-            handleChangeCode("");
-            handleChangeResults([]);
-            handleChangeFile(null);
-            handleChangeFileName("snippet");
-            handleChangeSanitizedCode("");
-            handleChangeActiveTab("editor");
-            handleChangeIsAnalyzing(false);
-          }}
-        >
+        <Button variant="outline" onClick={handleReset}>
           Clear
         </Button>
         <Button disabled={isAnalyzing || !code.trim()} onClick={handleAnalyze}>

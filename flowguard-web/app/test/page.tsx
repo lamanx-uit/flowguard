@@ -1,10 +1,11 @@
 "use client";
 
 import { TabResult } from "@/components/tab-result";
+import { StreamEvent } from "@/lib/types";
 
 const now = Date.now();
 
-const fakeResults = [
+const fakeResults: StreamEvent[] = [
   { stage: "started", timestamp: now },
   {
     stage: "detection",
@@ -60,8 +61,9 @@ export default function TestPage() {
         results={fakeResults}
         isAnalyzing={false}
         model="gpt-4.1-mini"
-        fileName="snippet"
-        handleChangeSanitizedCode={() => {}}
+        code=""
+        language="java"
+        handleChangeFixResult={() => {}}
         handleChangeActiveTab={() => {}}
       />
     </div>

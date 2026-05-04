@@ -9,6 +9,7 @@ import { Badge } from "./ui/badge";
 import { useEffect, useState } from "react";
 import { Wand2 } from "lucide-react";
 import { codeToHtml } from "shiki";
+import { FixResponse } from "@/lib/types";
 
 function HighlightedCode({ code, language }: { code: string; language: string }) {
   const [html, setHTML] = useState("");
@@ -28,30 +29,30 @@ function HighlightedCode({ code, language }: { code: string; language: string })
   );
 }
 
-export function TabSanitized({ fixResult, language }: { fixResult: any; language: string }) {
+export function TabFixed({ fixResult, language }: { fixResult: FixResponse | null; language: string }) {
   if (!fixResult || !fixResult.fixed_code) {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Sanitized Code</CardTitle>
-          <CardDescription>Generate sanitized code from results</CardDescription>
+          <CardTitle>Fixed Code</CardTitle>
+          <CardDescription>Generate fixed code from results</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
             <Wand2 className="h-12 w-12 mb-4" />
-            <p>No sanitized code generated yet</p>
+            <p>No fixed code generated yet</p>
           </div>
         </CardContent>
       </Card>
     );
   }
 
-  const changes: { line: number; description: string }[] = fixResult.changes ?? [];
+  const changes = fixResult.changes ?? [];
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Sanitized Code</CardTitle>
+        <CardTitle>Fixed Code</CardTitle>
         <CardDescription>
           {changes.length} change{changes.length !== 1 ? "s" : ""} applied
         </CardDescription>
