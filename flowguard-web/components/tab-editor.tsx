@@ -133,9 +133,12 @@ export function TabEditor({
         buffer = lines.pop() || "";
 
         for (const line of lines) {
-          if (line.trim()) {
+          if (!line.trim()) continue;
+          try {
             const event: StreamEvent = { ...JSON.parse(line), timestamp: Date.now() };
             handleAppendResult(event);
+          } catch {
+            console.warn("Failed to parse NDJSON line:", line);
           }
         }
       }

@@ -1,6 +1,6 @@
 # Flowguard
 
-A bug detection web application built on top of [LLMSAN](https://github.com/chengpeng-wang/LLMSAN) (EMNLP 2024, Purdue University). LLMSAN raises LLM-based Java bug-detection precision from ~69% to ~91% by requiring the model to emit a data-flow path as proof, then validating it through four sanitizer passes. Flowguard wraps this pipeline in a production-ready FastAPI backend and a Next.js frontend.
+A system that uses LLMs to detect and sanitize bugs in source code, built on top of [LLMSAN](https://github.com/chengpeng-wang/LLMSAN) (EMNLP 2024, Purdue University). Flowguard wraps this pipeline in a production-ready FastAPI backend and a Next.js frontend.
 
 ![Flowguard UI](flowguard-web/public/flowguard.png)
 
@@ -22,7 +22,6 @@ IE105/
 │   └── components/         # tab-editor, tab-result, tab-sanitize, code-block
 └── .github/workflows/
 ```
----
 
 ## Features
 
@@ -106,7 +105,6 @@ You can configure the analysis by specifying parameters in the API requests.
   - `model_name`: LLM model for fix generation (default: `gpt-4.1-mini`).
 - **Response:** Fixed code and list of changes as JSON.
 
----
 
 ## CI/CD Pipeline
 
@@ -121,7 +119,6 @@ push / PR to main (flowguard-api/** changes)
 
 Defined in `.github/workflows/deploy-backend.yaml`.
 
----
 
 ## More Programming Languages
 
