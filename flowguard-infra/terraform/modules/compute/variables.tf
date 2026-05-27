@@ -28,12 +28,12 @@ variable "static_ip_address" {
   type        = string
 }
 
-variable "lb_tag_value_id" {
+variable "lb_tag_id" {
   description = "The ID of the tag value to assign to the VM instance."
   type        = string
 }
 
-variable "backend_tag_value_id" {
+variable "backend_tag_id" {
   description = "The ID of the tag value to assign to the VM instance."
   type        = string
 }
@@ -53,4 +53,9 @@ variable "zone" {
   description = "The zone to deploy the FlowGuard infrastructure."
   type        = string
   default     = "us-central1-a"
+}
+
+variable "service_account_email" {
+  description = "The email of the service account to use for the VM instance."
+  type        = string
 }

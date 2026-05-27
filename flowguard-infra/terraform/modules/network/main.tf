@@ -1,5 +1,5 @@
 resource "google_compute_network" "d-flowguard-network" {
-  name = "d-flowguard-network"
+  name = var.network_name
 }
 
 resource "google_compute_subnetwork" "d-flowguard-public-subnet" {

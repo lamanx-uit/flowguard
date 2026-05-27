@@ -37,3 +37,9 @@ variable "backend_tag_namespaced_name" {
   description = "The namespaced name of the Backend tag."
   type        = string
 }
+
+variable "network_name" {
+  description = "The name of the VPC network to create."
+  type        = string
+  default     = "d-flowguard-network"
+}

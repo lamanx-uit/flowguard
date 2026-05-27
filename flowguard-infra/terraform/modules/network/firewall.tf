@@ -3,21 +3,9 @@ resource "google_compute_network_firewall_policy" "d-flowguard-network-firewall-
   project     = var.project_id
 }
 
-resource "google_compute_network_firewall_policy" "d-flowguard-backend-firewall-policy" {
-  name        = "d-flowguard-backend-firewall-policy"
-  project     = var.project_id
-}
-
 resource "google_compute_network_firewall_policy_association" "d-flowguard-network-firewall-association" {
   name = "d-flowguard-network-firewall-association"
   firewall_policy = google_compute_network_firewall_policy.d-flowguard-network-firewall-policy.id
-  attachment_target = google_compute_network.d-flowguard-network.id
-  project = var.project_id
-}
-
-resource "google_compute_network_firewall_policy_association" "d-flowguard-Backend-firewall-association" {
-  name = "d-flowguard-backend-firewall-association"
-  firewall_policy = google_compute_network_firewall_policy.d-flowguard-backend-firewall-policy.id
   attachment_target = google_compute_network.d-flowguard-network.id
   project = var.project_id
 }
@@ -86,7 +74,7 @@ resource "google_compute_network_firewall_policy_rule" "allowed_backend_traffic"
   direction               = "INGRESS"
   disabled                = false
   enable_logging          = true
-  firewall_policy         = google_compute_network_firewall_policy.d-flowguard-backend-firewall-policy.id
+  firewall_policy         = google_compute_network_firewall_policy.d-flowguard-network-firewall-policy.id
   priority                = 1500
   rule_name               = "allow-lb-traffic"
   target_secure_tags { name = var.backend_tag_namespaced_name }
