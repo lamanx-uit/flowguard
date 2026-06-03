@@ -18,7 +18,7 @@ provider "google" {
 }
 
 resource "google_service_account" "VMInstance" {
-  account_id   = var.service_account_id
+  account_id   = "d-flowguard-vm-instance-sa"
   display_name = "Custom SA for VM Instance"
 }
 
@@ -34,6 +34,19 @@ resource "google_project_iam_member" "log_writer" {
   member  = "serviceAccount:${google_service_account.VMInstance.email}"
 }
 
+resource "google_artifact_registry_repository" "flowguard" {
+  repository_id = "flowguard"
+  description = "Artifact Registry for FlowGuard"
+  location = var.region
+  format = "DOCKER"
+}
+
+resource "google_artifact_registry_repository_iam_member" "d-flowguard-beImagePuller" {
+  repository = google_artifact_registry_repository.flowguard.name
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${google_service_account.VMInstance.email}"
+}
+
 module "tags" {
   source = "../modules/tags"
   organization_id = var.organization_id
@@ -47,7 +60,7 @@ module "network" {
   source = "../modules/network"
   lb_tag_namespaced_name = module.tags.load_balancer_tag_id
   backend_tag_namespaced_name = module.tags.backend_tag_id
-  ssh_allowed_ip_ranges = [ "42.117.45.137" ]
+  ssh_allowed_ip_ranges = var.ssh_allowed_ip_ranges
   region = var.region
   organization_id = var.organization_id
   project_id = var.project_id
@@ -65,6 +78,14 @@ module "compute" {
   lb_tag_id = module.tags.load_balancer_tag_id
   backend_tag_id = module.tags.backend_tag_id
   backend_count = var.backend_count
-  service_account_id = var.service_account_id
+  service_account_id = google_service_account.VMInstance.account_id
   service_account_email = google_service_account.VMInstance.email
+}
+
+module "cicd_githubActions" {
+  source = "../modules/cicd_githubActions"
+  github_repo = var.github_repo
+  artifact_registry_repository_name = google_artifact_registry_repository.flowguard.name
+  service_account_id = "d-flowguard-github-oidc-sa"
+  location = var.region
 }

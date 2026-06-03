@@ -32,5 +32,8 @@ locals {
     "roles/iam.serviceAccountUser",
     "roles/resourcemanager.tagAdmin",
     "roles/resourcemanager.tagUser",
+    "roles/compute.securityAdmin",
+    "roles/iam.workloadIdentityPoolAdmin",
+    "roles/artifactregistry.admin",
   ]
 }

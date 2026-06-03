@@ -27,7 +27,7 @@ resource "google_compute_instance" "d-flowguard-lb-instance" {
   }
 
   metadata = {
-    "ssh-keys" = "lamanx:${var.ssh_public_key}"
+    "ssh-keys" = "ansible:${var.ssh_public_key}"
   }
 }
 
@@ -53,7 +53,7 @@ resource "google_compute_instance" "d-flowguard-backend-instance" {
   }
 
   metadata = {
-    "ssh-keys" = "lamanx:${var.ssh_public_key}"
+    "ssh-keys" = "ansible:${var.ssh_public_key}"
   }
 }
 
@@ -61,6 +61,9 @@ resource "google_tags_location_tag_binding" "lb_tag_binding" {
   parent    = "//compute.googleapis.com/projects/${data.google_project.project.number}/zones/${var.zone}/instances/${google_compute_instance.d-flowguard-lb-instance.instance_id}"
   tag_value = var.lb_tag_id
   location  = var.zone
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "google_tags_location_tag_binding" "backend_tag_binding" {
@@ -68,4 +71,7 @@ resource "google_tags_location_tag_binding" "backend_tag_binding" {
   parent    = "//compute.googleapis.com/projects/${data.google_project.project.number}/zones/${var.zone}/instances/${google_compute_instance.d-flowguard-backend-instance[count.index].instance_id}"
   tag_value = var.backend_tag_id
   location  = var.zone
+  lifecycle {
+    ignore_changes = all
+  }
 }

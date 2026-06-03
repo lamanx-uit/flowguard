@@ -12,7 +12,7 @@ variable "project_id" {
 }
 
 variable "ssh_allowed_ip_ranges" {
-  description = "List of IP ranges allowed to connect via SSH to the FlowGuard infrastructure."
+  description = "List of IP ranges from GCP IAP TCP tunneling."
   type = list(string)
 }
 

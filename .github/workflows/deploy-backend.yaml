@@ -13,7 +13,6 @@ on:
 jobs:
     test:
       runs-on: ubuntu-latest
-
       steps:
         - name: Checkout code
           uses: actions/checkout@v4
@@ -33,21 +32,75 @@ jobs:
         - name: Code functionality check
           run: pytest flowguard-api/app/tests/
 
+          
+    build-and-scan:
+      runs-on: ubuntu-latest
+      needs: test
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
         - name: Set up Docker Buildx
           uses: docker/setup-buildx-action@v4
+        
+        - name: Build Docker image
+          uses: docker/build-push-action@v6
+          with:
+            context: ./flowguard-api
+            tags: flowguard:ci
+            cache-from: type=gha
+            cache-to: type=gha,mode=max
+            load: true
       
-        - name: Build and export docker image
-          run: |
-            docker build -t flowguard:ci ./flowguard-api
-            docker save flowguard:ci -o /tmp/flowguard.tar
-
         - name: Run Trivy vulnerability scan
-          uses: aquasecurity/trivy-action@master
-          with: 
+          uses: aquasecurity/trivy-action@v0.36.0
+          with:
             scan-type: image
             image-ref: flowguard:ci
             severity: "CRITICAL"
             exit-code: '1'
+        
+        - name: Save image to tar
+          run: docker save flowguard:ci -o /tmp/flowguard-ci.tar
 
-          
+        - name: Upload image artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: flowguard-ci-image
+            path: /tmp/flowguard-ci.tar
             
+      
+    deploy:
+      runs-on: ubuntu-latest
+      needs: build-and-scan
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      permissions:
+        contents: read
+        id-token: write
+      env:
+        GAR_URL: ${{ vars.GAR_REGION }}-docker.pkg.dev/${{ vars.GAR_PROJECT_ID }}/${{ vars.GAR_REPOSITORY }}/${{ vars.GAR_IMAGE_NAME }}
+      steps:
+        - name: Download image artifact
+          uses: actions/download-artifact@v4
+          with:
+            name: flowguard-ci-image
+            path: /tmp
+        
+        - name: Load Docker image
+          run: docker load -i /tmp/flowguard-ci.tar
+
+        - name: Authenticate to Google Cloud
+          uses: google-github-actions/auth@v2
+          with:
+            workload_identity_provider: ${{ secrets.WIF_PROVIDER_TOKEN }}
+            service_account: ${{ secrets.WIF_SA_EMAIL }}
+
+        - name: Configure Docker for Google Artifact Registry
+          run: gcloud auth configure-docker ${{ vars.GAR_REGION }}-docker.pkg.dev --quiet
+
+        - name: Push image to Artifact Registry
+          run: |
+            docker tag flowguard:ci ${{ env.GAR_URL }}:${{ github.sha }}
+            docker tag flowguard:ci ${{ env.GAR_URL }}:latest
+            docker push ${{ env.GAR_URL }}:${{ github.sha }}
+            docker push ${{ env.GAR_URL }}:latest

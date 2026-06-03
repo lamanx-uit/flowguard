@@ -45,3 +45,15 @@ variable "network_name" {
   type        = string
   default     = "d-flowguard-network"
 }
+
+variable "github_repo" {
+  default = "lamanx-uit/flowguard"
+  description = "The GitHub repository to which the OIDC provider will be restricted (e.g., 'owner/repo')."
+  type = string
+}
+
+variable "ssh_allowed_ip_ranges" {
+  description = "GCP IAP TCP tunneling IP ranges."
+  type        = list(string)
+  default = [ "35.235.240.0/20" ]
+}
