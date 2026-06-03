@@ -1,0 +1,7 @@
+---
+- hosts: lb
+  become: true
+  roles:
+    - common
+    - cis
+    - nginx_lb

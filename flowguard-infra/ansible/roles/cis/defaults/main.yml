@@ -1,0 +1,10 @@
+---
+cis_sshd_port: 22
+cis_sshd_max_auth_tries: 3
+cis_sshd_login_grace_time: 60
+cis_sshd_client_alive_interval: 300
+cis_sshd_client_alive_count_max: 0
+cis_sshd_allow_users: ansible
+
+# Extra TCP ports to open, overridden per group in group_vars
+cis_allowed_tcp_ports: []

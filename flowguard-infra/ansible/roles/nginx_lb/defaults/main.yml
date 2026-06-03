@@ -1,0 +1,5 @@
+---
+nginx_lb_nginx_worker_processes: auto
+nginx_lb_worker_connections: 1024
+nginx_lb_keepalive_timeout: 65
+nginx_lb_client_max_body_size: 50m

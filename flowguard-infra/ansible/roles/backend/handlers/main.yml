@@ -1,0 +1,10 @@
+---
+- name: Restart flowguard
+  ansible.builtin.service:
+    name: flowguard
+    state: restarted
+    daemon_reload: true
+
+- name: Daemon reload
+  ansible.builtin.systemd:
+    daemon_reload: true

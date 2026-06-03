@@ -1,0 +1,23 @@
+---
+- name: Install auditd
+  ansible.builtin.apt:
+    name: auditd
+    state: present
+    update_cache: true
+  tags: [cis, auditd]
+
+- name: Deploy audit rules template
+  ansible.builtin.template:
+    src: audit.rules.j2
+    dest: /etc/audit/rules.d/flowguard.rules
+    owner: root
+    group: root
+    mode: '0640'
+  notify: Restart auditd
+  tags: [cis, auditd]
+
+- name: Enable auditd service
+  ansible.builtin.service:
+    name: auditd
+    enabled: true
+  tags: [cis, auditd]

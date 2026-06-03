@@ -1,0 +1,23 @@
+# Managed by Ansible — do not edit manually
+Port {{ cis_sshd_port }}
+Protocol 2
+
+PermitRootLogin no
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+
+MaxAuthTries {{ cis_sshd_max_auth_tries }}
+LoginGraceTime {{ cis_sshd_login_grace_time }}
+ClientAliveInterval {{ cis_sshd_client_alive_interval }}
+ClientAliveCountMax {{ cis_sshd_client_alive_count_max }}
+
+AllowUsers {{ cis_sshd_allow_users }}
+
+X11Forwarding no
+AllowTcpForwarding no
+PrintLastLog yes
+Banner none
+
+Subsystem sftp /usr/lib/openssh/sftp-server

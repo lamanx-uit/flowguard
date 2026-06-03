@@ -1,0 +1,10 @@
+---
+- name: Restart sshd
+  ansible.builtin.service:
+    name: ssh
+    state: restarted
+
+- name: Restart auditd
+  ansible.builtin.service:
+    name: auditd.service
+    state: restarted

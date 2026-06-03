@@ -1,0 +1,5 @@
+project_id: "ie105-496123"
+artifact_registry_region: us-central1
+artifact_registry_repo: flowguard
+image_name: flowguard-api
+app_port: 8000

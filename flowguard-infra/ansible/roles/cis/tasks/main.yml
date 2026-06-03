@@ -1,0 +1,16 @@
+---
+- name: Include SSHD hardening tasks
+  ansible.builtin.import_tasks: sshd.yml
+  tags: [cis, sshd]
+
+- name: Include UFW hardening tasks
+  ansible.builtin.import_tasks: ufw.yml
+  tags: [cis, ufw]
+
+- name: Include auditd hardening tasks
+  ansible.builtin.import_tasks: auditd.yml
+  tags: [cis, auditd]
+
+- name: Include sysctl hardening tasks
+  ansible.builtin.import_tasks: sysctl.yml
+  tags: [cis, sysctl]

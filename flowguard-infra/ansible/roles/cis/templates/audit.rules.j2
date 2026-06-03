@@ -1,0 +1,35 @@
+# Managed by Ansible — CIS Ubuntu benchmark audit rules
+
+# Delete all existing rules
+-D
+
+# Increase buffer size
+-b 8192
+
+# Failure mode: 1 = log, 2 = panic
+-f 1
+
+# Log all sudo usage
+-w /etc/sudoers -p wa -k sudoers_changes
+-w /etc/sudoers.d/ -p wa -k sudoers_changes
+
+# Log user and group changes
+-w /etc/passwd -p wa -k identity
+-w /etc/group -p wa -k identity
+-w /etc/shadow -p wa -k identity
+-w /etc/gshadow -p wa -k identity
+
+# Log login/logout events
+-w /var/log/wtmp -p wa -k session
+-w /var/log/btmp -p wa -k session
+-w /var/run/utmp -p wa -k session
+
+# Log SSH authorized_keys changes
+-w /root/.ssh -p wa -k ssh_keys
+-w /home/ansible/.ssh -p wa -k ssh_keys
+
+# Log privilege escalation
+-a always,exit -F arch=b64 -S setuid -S setgid -k privilege_escalation
+
+# Make config immutable (must reboot to change rules)
+-e 2

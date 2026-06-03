@@ -1,0 +1,15 @@
+---
+- name: Deploy sshd_config template
+  ansible.builtin.template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0600'
+    validate: 'sshd -t -f %s'
+  notify: Restart sshd
+  tags: [cis, sshd]
+
+- name: Notify handler to restart sshd
+  ansible.builtin.meta: flush_handlers
+  tags: [cis, sshd]

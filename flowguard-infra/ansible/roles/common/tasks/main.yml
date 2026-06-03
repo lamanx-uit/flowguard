@@ -1,0 +1,33 @@
+---
+- name: Update apt cache and upgrade packages
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+    cache_valid_time: 3600
+  tags: [common]
+
+- name: Install common base packages
+  ansible.builtin.apt:
+    name: "{{ common_base_packages }}"
+    state: present
+  tags: [common]
+
+- name: Enable and start chrony
+  ansible.builtin.service:
+    name: chrony
+    enabled: true
+    state: started
+  tags: [common]
+
+- name: Set timezone to UTC
+  community.general.timezone:
+    name: "{{ common_timezone }}"
+  tags: [common]
+
+- name: Ensure ansible user exists
+  ansible.builtin.user:
+    name: ansible
+    state: present
+    groups: sudo
+    shell: /bin/bash
+  tags: [common]

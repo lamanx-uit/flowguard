@@ -1,0 +1,15 @@
+---
+backend_docker_user: flowguard
+backend_container_name: flowguard-api
+backend_container_restart_policy: always
+backend_host_port: "{{ app_port }}"
+backend_container_port: "{{ app_port }}"
+backend_image_tag: latest
+
+# Full image reference, assembled from global vars in group_vars/all.yml
+backend_image: "{{ artifact_registry_region }}-docker.pkg.dev/{{ project_id }}/{{ artifact_registry_repo }}/{{ image_name }}:{{ backend_image_tag }}"
+
+# Gate the app deployment (AR auth + image pull + service start).
+# false  = install Docker only (test VMs, no image in registry yet)
+# true   = full deploy (once CI has pushed an image to Artifact Registry)
+backend_deploy_app: true

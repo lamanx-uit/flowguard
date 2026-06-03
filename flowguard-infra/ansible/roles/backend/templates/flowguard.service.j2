@@ -1,0 +1,20 @@
+# Managed by Ansible — do not edit manually
+[Unit]
+Description=Flowguard API Container
+After=docker.service
+Requires=docker.service
+
+[Service]
+User={{ backend_docker_user }}
+Restart=always
+RestartSec=5s
+ExecStartPre=-/usr/bin/docker stop {{ backend_container_name }}
+ExecStartPre=-/usr/bin/docker rm {{ backend_container_name }}
+ExecStart=/usr/bin/docker run --rm \
+    --name {{ backend_container_name }} \
+    -p {{ backend_host_port }}:{{ backend_container_port }} \
+    {{ backend_image }}
+ExecStop=/usr/bin/docker stop {{ backend_container_name }}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+---
+common_timezone: UTC
+common_base_packages:
+  - curl
+  - vim
+  - htop
+  - chrony
+  - ca-certificates
+  - gnupg
+  - unzip

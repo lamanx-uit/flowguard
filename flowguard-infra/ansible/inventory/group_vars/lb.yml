@@ -1,0 +1,8 @@
+nginx_lb_upstream_port: 8000
+
+# HTTP + HTTPS
+cis_allowed_tcp_ports:
+  - 80
+  - 443
+certbot_email: "{{ certbot_email }}"
+domain_name: "" 

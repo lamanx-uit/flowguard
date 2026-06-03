@@ -1,0 +1,105 @@
+---
+# install docker CE (apt repo method)
+- name: Install Docker apt dependencies
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+    state: present
+    update_cache: true
+  tags: [docker]
+
+- name: Create /etc/apt/keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  tags: [docker]
+
+- name: Add Docker's official GPG key
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+  tags: [docker]
+
+- name: Add Docker apt repository
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: deb
+    uris: https://download.docker.com/linux/ubuntu
+    suites: "{{ ansible_distribution_release }}"
+    components: stable
+    architectures: "{{ ansible_architecture | replace('x86_64', 'amd64') }}"
+    signed_by: /etc/apt/keyrings/docker.asc
+    state: present
+  tags: [docker]
+
+- name: Install Docker CE
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+  tags: [docker]
+
+- name: Enable and start Docker service
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+  tags: [docker]
+
+# create non-root docker_user ({{ docker_user }})
+- name: Create non-root Docker user
+  ansible.builtin.user:
+    name: "{{ backend_docker_user }}"
+    shell: /usr/sbin/nologin
+    create_home: false
+    state: present
+    groups: docker
+    append: true
+  tags: [docker]
+
+# authenticate to GCP Artifact Registry
+- name: Authenticate to GCP Artifact Registry
+  ansible.builtin.command:
+    cmd: gcloud auth configure-docker {{ artifact_registry_region }}-docker.pkg.dev --quiet
+  when: backend_deploy_app | bool
+  changed_when: false
+  tags: [docker, deploy]
+
+# pull latest image
+- name: Pull latest image
+  ansible.builtin.command:
+    cmd: docker pull {{ backend_image }}
+  when: backend_deploy_app | bool
+  changed_when: false
+  tags: [docker, deploy]
+
+# deploy systemd unit
+- name: Deploy flowguard systemd unit
+  ansible.builtin.template:
+    src: flowguard.service.j2
+    dest: /etc/systemd/system/flowguard.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart flowguard
+  tags: [docker, deploy]
+
+# enable + start the service
+- name: Enable and start flowguard service
+  ansible.builtin.systemd:
+    name: flowguard
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: backend_deploy_app | bool
+  tags: [docker, deploy]

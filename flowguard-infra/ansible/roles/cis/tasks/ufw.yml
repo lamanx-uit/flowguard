@@ -1,0 +1,43 @@
+---
+- name: Install UFW
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+    update_cache: true
+  tags: [cis, ufw]
+
+- name: Set UFW incoming default policy
+  community.general.ufw:
+    state: enabled
+    policy: deny
+    direction: incoming
+  tags: [cis, ufw]
+
+- name: Set UFW outgoing default policy
+  community.general.ufw:
+    state: enabled
+    policy: allow
+    direction: outgoing
+  tags: [cis, ufw]
+
+# Allow SSH on every host
+- name: Allow SSH
+  community.general.ufw:
+    rule: allow
+    port: "{{ cis_sshd_port | string }}"
+    proto: tcp
+  tags: [cis, ufw]
+
+# Allow extra ports defined per group (lb gets 80/443, backend gets app_port)
+- name: Allow group-specific TCP ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item | string }}"
+    proto: tcp
+  loop: "{{ cis_allowed_tcp_ports }}"
+  tags: [cis, ufw]
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+  tags: [cis, ufw]
